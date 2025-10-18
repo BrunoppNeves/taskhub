@@ -1,7 +1,6 @@
 # 🧠 TaskHub - Backend
 
 Este é o backend do **TaskHub**, um sistema Full Stack de gerenciamento de tarefas desenvolvido em **Java (Spring Boot)** e **React**.  
-O objetivo do projeto é servir como um exemplo completo de aplicação **full stack** para portfólio.
 
 ---
 
