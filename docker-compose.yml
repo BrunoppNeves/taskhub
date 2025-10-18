@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: taskhub-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: taskhub
+      MYSQL_USER: taskhubuser
+      MYSQL_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

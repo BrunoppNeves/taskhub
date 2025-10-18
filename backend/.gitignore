@@ -1,0 +1,35 @@
+### IntelliJ IDEA ###
+.idea/
+*.iml
+out/
+*.iws
+*.ipr
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+### Logs ###
+*.log
+logs/
+spring.log
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Environment ###
+.env
+*.local
+
+### Others ###
+/node_modules/
+/dist/
+/build/
+
+### Docker ###
+/docker-compose.override.yml
