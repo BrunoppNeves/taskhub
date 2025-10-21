@@ -38,7 +38,7 @@ public class TaskService {
     
     @Transactional
     public Task updateTask(Task task){
-        if(task.getUser() == null){
+        if(task.getUser().getId() == null){
             throw new IllegalArgumentException("Task must have a user assigned");
         }
         return taskRepository.save(task);

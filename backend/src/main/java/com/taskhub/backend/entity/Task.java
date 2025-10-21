@@ -30,7 +30,6 @@ public class Task {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @NotBlank(message = "Status is required")
     private TaskStatus status;
 
     @CreationTimestamp
