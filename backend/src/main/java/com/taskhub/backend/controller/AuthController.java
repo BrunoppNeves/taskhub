@@ -1,9 +1,13 @@
 package com.taskhub.backend.controller;
 
+import com.taskhub.backend.dto.UserRequestDTO;
 import com.taskhub.backend.entity.User;
 import com.taskhub.backend.security.JwtUtil;
 import com.taskhub.backend.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -15,10 +19,23 @@ public class AuthController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserService userService, JwtUtil jwtUtil) {
+    public AuthController(UserService userService, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @PostMapping("/createUser")
+    public ResponseEntity<User> createUser(@RequestBody @Valid UserRequestDTO dto){
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        user.setRoles(dto.getRoles());
+
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PostMapping("/login")
@@ -32,7 +49,7 @@ public class AuthController {
                 return ResponseEntity.status(401).body(error);
             }
 
-            if (!user.getPassword().equals(password)) {
+            if (!passwordEncoder.matches(password, user.getPassword())) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Senha incorreta");
                 return ResponseEntity.status(401).body(error);

@@ -1,5 +1,7 @@
 package com.taskhub.backend.controller;
 
+import com.taskhub.backend.dto.TaskRequestDTO;
+import com.taskhub.backend.dto.TaskResponseDTO;
 import com.taskhub.backend.entity.Task;
 import com.taskhub.backend.entity.User;
 import com.taskhub.backend.exception.TaskNotFoundException;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -53,21 +56,37 @@ public class TaskController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Task>> getTasksByUser() {
+    public ResponseEntity<List<TaskResponseDTO>> getTasksByUser() {
         Long loggedUserId = getLoggedUserId();
-
         User user = userService.getUserById(loggedUserId)
                 .orElseThrow(() -> new UserNotFoundException(loggedUserId));
 
-        List<Task> tasks = taskService.getTasksByUser(user);
+        List<TaskResponseDTO> tasks = taskService.getTasksByUser(user).stream().map(
+                task -> new TaskResponseDTO(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getStatus(),
+                        task.getUser().getId(),
+                        task.getCreatedAt()
+                )
+        ).collect(Collectors.toList());
         return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long taskId) {
+    public ResponseEntity<TaskResponseDTO> getTaskById(@Valid @PathVariable Long taskId) {
         Task task = taskService.getTaskById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(taskId));
-        return ResponseEntity.ok(task);
+        TaskResponseDTO response = new TaskResponseDTO(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getUser().getId(),
+                task.getCreatedAt()
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{taskId}")

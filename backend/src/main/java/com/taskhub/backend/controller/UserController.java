@@ -1,5 +1,6 @@
 package com.taskhub.backend.controller;
 
+import com.taskhub.backend.dto.UserResponseDTO;
 import com.taskhub.backend.entity.User;
 import com.taskhub.backend.exception.UserNotFoundException;
 import com.taskhub.backend.security.JwtUtil;
@@ -37,33 +38,37 @@ public class UserController {
         this.request = request;
     }
 
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid User user){
-        User cretedUser = userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(cretedUser);
-    }
-
     @GetMapping
-    public ResponseEntity<User> findUser() {
+    public ResponseEntity<UserResponseDTO> findUser() {
         Long loggedUserId = getLoggedUserId();
-
         User user = userService.getUserById(loggedUserId)
                 .orElseThrow(() -> new UserNotFoundException(loggedUserId));
-        return ResponseEntity.ok(user);
+
+        UserResponseDTO response = new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getRoles()
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody User user){
+    public ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UserResponseDTO dto) {
         Long loggedUserId = getLoggedUserId();
-        User getUser = userService.getUserByUsername(user.getUsername()).orElseThrow(() -> new UserNotFoundException(null));
+        User existingUser = userService.getUserById(loggedUserId).orElseThrow(() -> new UserNotFoundException(loggedUserId));
 
-        if(!loggedUserId.equals(getUser.getId())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        existingUser.setUsername(dto.getUsername());
+        if (dto.getRoles() != null) {
+            existingUser.setRoles(dto.getRoles());
         }
 
-        user.setId(loggedUserId);
-        User updateUser = userService.updateUser(user);
-        return ResponseEntity.ok(updateUser);
+        User updatedUser = userService.updateUser(existingUser);
+        UserResponseDTO response = new UserResponseDTO(
+                updatedUser.getId(),
+                updatedUser.getUsername(),
+                updatedUser.getRoles()
+        );
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping()

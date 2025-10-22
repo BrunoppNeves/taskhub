@@ -10,6 +10,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  jwt:
+    secret: ${JWT_SECRET:bb9bc6e4baa7cda71b5d50df079f2ad1}
+    expiration: 3600000
 
 server:
   port: 8080
