@@ -23,6 +23,10 @@ public class User {
     @NotBlank(message = "Username is required")
     private String username;
 
+    @Column(unique = true, nullable = false)
+    @NotBlank(message = "Email is required")
+    private String email;
+
     @Column(nullable = false)
     @NotBlank(message = "Password is required")
     @JsonIgnore
